@@ -1,0 +1,13 @@
+version: 1
+metadata:
+  name: CH - Provider authorization flow (implicit consent)
+entries:
+  - id: flow-auth-implicit
+    model: authentik_flows.flow
+    identifiers:
+      slug: auth-implicit
+    attrs:
+      designation: authorization
+      name: Authorize Application
+      title: Redirecting to %(app)s
+      authentication: require_authenticated

@@ -1,0 +1,77 @@
+version: 1
+metadata:
+  name: CH - Authentication flow
+entries:
+  - model: authentik_blueprints.metaapplyblueprint
+    attrs:
+      identifiers:
+        name: CH - Password change flow
+      required: true
+  - id: flow-authentication
+    model: authentik_flows.flow
+    identifiers:
+      slug: login
+    attrs:
+      designation: authentication
+      layout: sidebar_left
+      name: Welcome to W.I.S.V. Christiaan Huygens!
+      title: Welcome to W.I.S.V. Christiaan Huygens!
+      background_url: "/media/background.jpg"
+      authentication: require_unauthenticated
+  - id: identification-authentication
+    model: authentik_stages_identification.identificationstage
+    identifiers:
+      name: CH Authentication - Identification
+    attrs:
+      user_fields:
+        - email
+        - username
+  - id: passwordstage-authentication
+    model: authentik_stages_password.passwordstage
+    identifiers:
+      name: CH Authentication - Password
+    attrs:
+      backends:
+        - authentik.core.auth.InbuiltBackend
+        - authentik.core.auth.TokenBackend
+      configure_flow: !Find [authentik_flows.flow, [slug, changepassword]]
+      failed_attempts_before_cancel: 5
+  - id: authenticatorvalidatestage-authentication-mfa
+    model: authentik_stages_authenticator_validate.authenticatorvalidatestage
+    identifiers:
+      name: CH Authentication - MFA
+    attrs:
+      not_configured_action: skip
+      device_classes:
+        - totp
+        - webauthn
+  - id: userloginstage-authentication
+    model: authentik_stages_user_login.userloginstage
+    identifiers:
+      name: CH Authentication - Login
+    attrs:
+      session_duration: seconds=0
+  - id: flowstagebinding-authentication-identification
+    model: authentik_flows.flowstagebinding
+    identifiers:
+      order: 10
+      stage: !KeyOf identification-authentication
+      target: !KeyOf flow-authentication
+  - id: flowstagebinding-authentication-password
+    model: authentik_flows.flowstagebinding
+    identifiers:
+      order: 20
+      stage: !KeyOf passwordstage-authentication
+      target: !KeyOf flow-authentication
+  - id: flowstagebinding-authentication-mfa-validation
+    model: authentik_flows.flowstagebinding
+    identifiers:
+      order: 30
+      stage: !KeyOf authenticatorvalidatestage-authentication-mfa
+      target: !KeyOf flow-authentication
+  - id: flowstagebinding-authentication-login
+    model: authentik_flows.flowstagebinding
+    identifiers:
+      order: 100
+      stage: !KeyOf userloginstage-authentication
+      target: !KeyOf flow-authentication

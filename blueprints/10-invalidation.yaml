@@ -1,0 +1,21 @@
+version: 1
+metadata:
+  name: CH - Invalidation flow
+entries:
+  - id: flow-invalidation
+    model: authentik_flows.flow
+    identifiers:
+      slug: logout
+    attrs:
+      designation: invalidation
+      name: Logout
+      title: CH Invalidation Flow
+  - id: logoutstage-invalidation
+    model: authentik_stages_user_logout.userlogoutstage
+    identifiers:
+      name: CH Logout
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      order: 0
+      stage: !KeyOf logoutstage-invalidation
+      target: !KeyOf flow-invalidation

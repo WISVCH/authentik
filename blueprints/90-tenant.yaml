@@ -1,0 +1,36 @@
+metadata:
+  name: CH - Tenant
+version: 1
+entries:
+  - model: authentik_blueprints.metaapplyblueprint
+    attrs:
+      identifiers:
+        name: CH - Authentication flow
+      required: true
+  - model: authentik_blueprints.metaapplyblueprint
+    attrs:
+      identifiers:
+        name: CH - Invalidation flow
+      required: true
+  - id: tenant-ch
+    model: authentik_tenants.tenant
+    identifiers:
+      domain: wisv.ch
+      default: True
+    attrs:
+      branding_title: "W.I.S.V. Christiaan Huygens"
+      branding_logo: "/media/logo.png"
+      branding_favicon: "/media/favicon.png"
+      event_retention: "days=30"
+      flow_authentication: !Find [authentik_flows.flow, [slug, login]]
+      flow_invalidation: !Find [authentik_flows.flow, [slug, logout]]
+      attributes:
+        settings:
+          enabledFeatures:
+            apiDrawer: false
+            notificationDrawer: false
+            settings: true
+            applicationEdit: false
+            search: false
+          navbar:
+            userDisplay: name
