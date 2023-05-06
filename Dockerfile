@@ -1,4 +1,4 @@
-FROM beryju/authentik:2022.11.3
+FROM beryju/authentik:2023.4.1
 
 # Switch (back) to root so we can write to certain folders again.
 USER 0
